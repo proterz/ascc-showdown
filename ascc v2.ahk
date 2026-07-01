@@ -2,7 +2,7 @@
 #SingleInstance Force
 #include lib\OCR.ahk ; OCR library, shoutout Descolada on github
 
-global TargetMonitor := 2 ; Set to 1 for Primary Monitor, 2 for Secondary, etc...
+global TargetMonitor := 1 ; Set to 1 for Primary Monitor, 2 for Secondary, etc...
 
 global LevelToStop := 5
 global CurrentLevel := 0
