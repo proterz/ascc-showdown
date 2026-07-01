@@ -5,6 +5,7 @@ This macro has the ability to navigate to Anime Showdown area by itself. If the 
 If the player experiences disconnection, the macro will test and wait for internet connectivity, rejoin the game, then navigate to Anime Showdown area. ([EXAMPLE](https://www.youtube.com/watch?v=AVYvJCEaBYw))
 
 Tick the "Repeat Showdown" checkbox to constantly repeat the load card -> farm -> claim cycle. "AutoSetup" checkbox currently does nothing (kinda lazy to remove too)
+
 (Note: If you want to modify the mouse positions, use the AutoHotkey Window Spy program that comes with the installation of AutoHotkey, then copy the Client mouse positions specifically!)
 
 Hotkeys:
