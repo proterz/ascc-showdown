@@ -1,5 +1,5 @@
 # ascc-showdown
-AHK macro made for farming Anime Showdown minigame for the roblox game ASCC. It first automatically loads cards using the Strong Card + 2 Weak Card team composition, then constantly clicks the "Next Level" button until the desired level is reached which will end the run and claim rewards, then repeat. It uses OCR to determine the current level and imagesearch function to detect certain parts of the game. [EXAMPLE](https://www.youtube.com/watch?v=aHTuHOTrpFk)
+AHK macro made for farming Anime Showdown minigame for the roblox game ASCC. It first forces focus on Roblox and resize the window to 1280 x 720 to standardize the coordinates (for mouse position, OCR, etc). Next, it automatically loads cards using the Strong Card + 2 Weak Card team composition, then constantly clicks the "Next Level" button until the desired level is reached which will end the run and claim rewards, then repeat. It uses OCR to determine the current level and imagesearch function to detect certain parts of the game. [EXAMPLE](https://www.youtube.com/watch?v=aHTuHOTrpFk)
 
 
 
