@@ -1,5 +1,5 @@
 #Requires AutoHotkey v2.0
-global CurrentLevel, LevelToStop, MACRO_STATE
+global CurrentLevel, LevelToStop, MACRO_STATE, IsFarming
 
 LoadCards() {
     if (CheckIfDisconnected()) {
@@ -28,7 +28,7 @@ CheckClaimButton() {
 }
 
 ClaimRewards() {
-    global MACRO_STATE
+    global MACRO_STATE, IsFarming
     MacroEventManager.Broadcast("StatusTextUpdated", "Goal reached! Claiming...")
     loop {
         try {
@@ -45,7 +45,7 @@ ClaimRewards() {
                 ToolTip()
 
                 MacroEventManager.Broadcast("StatusTextUpdated", "Waiting for UI to clear...")
-                Sleep(3000)
+                Sleep(1000)
 
                 if (CheckboxRepeat.Value == 0) {
                     IsFarming := false

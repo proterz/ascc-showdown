@@ -5,6 +5,7 @@ global TargetMonitor := 1 ; Set to 1 for Primary Monitor, 2 for Secondary, etc..
 global LevelToStop := 5
 global CurrentLevel := 0
 global CurrentLevel2 := 0 ; for potions part (to be developed in the future)
+global IsFarming := false
 global goalReached := false
 
 global MACRO_STATE := "IDLE" ; IDLE, PREPARATION (setting window size, going to showdown area, etc), LOADING_CARDS, FARM_LOOP, CLAIMING, RECONNECTING

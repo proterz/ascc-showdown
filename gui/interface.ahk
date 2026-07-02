@@ -49,6 +49,9 @@ StartButtonClicked(*) {
     LevelToStop := Integer(inputValue) + 1
     IsFarming := true
 
+    StartButton.Enabled := false
+    StartButton.Text := "Running"
+
     if (!FocusRoblox()) {
         MacroEventManager.Broadcast("FarmingStopped")
         return
