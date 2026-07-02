@@ -57,24 +57,24 @@ CheckInternet() {
 HandleDisconnect() {
     Highlight()
     ToolTip()
-    TextStatus.Text := "Status: Disconnected! Testing internet..."
+    MacroEventManager.Broadcast("StatusTextUpdated", "Disconnected! Testing internet...")
 
     while (!CheckInternet()) {
         ; Use standard Sleep here so we don't create an infinite loop with StatusSleep
         Sleep(5000) 
-        TextStatus.Text := "Status: Testing internet..."
+        MacroEventManager.Broadcast("StatusTextUpdated", "Testing internet...")
     }
 
-    TextStatus.Text := "Status: Internet restored!"
+    MacroEventManager.Broadcast("StatusTextUpdated", "Internet restored!")
     Sleep(2000)
 
     CustomClick(723, 432)
-    TextStatus.Text := "Status: Reconnecting to the game..."
+    MacroEventManager.Broadcast("StatusTextUpdated", "Reconnecting to the game...")
 
     while (!CheckIfIngame()) {
         Sleep(1000)
     }
-    TextStatus.Text := "Status: Successfully reconnected to the game!"
+    MacroEventManager.Broadcast("StatusTextUpdated", "Successfully reconnected to the game!")
     Sleep(3000)
     CustomClick(754, 475)
     Sleep(500)
@@ -84,9 +84,13 @@ HandleDisconnect() {
     throw Error("GameReconnected") 
 } ; handles disconnection and navigates to showdown area, to be used almost everywhere in the code
 
+ClaimRewardsEarly() {
+
+}
+
 EndRunEarly() {
     global IsFarming
-    TextStatus.Text := "Status: Ending run early..."
+    MacroEventManager.Broadcast("StatusTextUpdated", "Ending run early...")
     attempts := 0 ; Tracks how many times we try to force-clear a match
     
     Loop {
@@ -102,17 +106,15 @@ EndRunEarly() {
             dY -= 31
             claimScanX := dX + 565
             claimScanY := dY + 512
-            scanned_text := OCR.FromRect(claimScanX, claimScanY, 150, 60).Text
-            Highlight(claimScanX, claimScanY, 150, 60)
             
-            if (scanned_text != "CLAIM") {
+            if (!CheckClaimButton()) {
                 attempts++
                 
                 ; If tried 5 times and no CLAIM, the run is already clear
                 if (attempts > 10) {
                     Highlight()
                     ToolTip()
-                    TextStatus.Text := "Status: Lobby clear, starting farm cycle..."
+                    MacroEventManager.Broadcast("StatusTextUpdated", "Lobby clear, starting farm cycle...")
                     break
                 }
                 
@@ -122,10 +124,11 @@ EndRunEarly() {
             } else {
                 ToolTip("CLAIM button found! Clicking CLAIM", claimScanX, claimScanY + 60)
                 CustomClick(635, 511) ; Click CLAIM
+                Sleep(500)
                 Highlight()
                 ToolTip()
                 
-                TextStatus.Text := "Status: Waiting for load card menu..."
+                MacroEventManager.Broadcast("StatusTextUpdated", "Waiting for lobby...")
                 Sleep(2000)
                 break
             }

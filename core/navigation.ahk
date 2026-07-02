@@ -1,9 +1,10 @@
 #Requires AutoHotkey v2.0
+global TargetMonitor, MACRO_STATE
 
 FocusRoblox() {
     targetWindow := "ahk_exe RobloxPlayerBeta.exe"
     if !WinExist(targetWindow) {
-        MsgBox("Roblox is not running!")
+        MsgBox("Roblox is not running!!!")
         return false
     }
     WinActivate(targetWindow)
@@ -80,6 +81,7 @@ SetWindowSize() {
 
 TheSetup3() {
     TextStatus.Text := "Status: Resetting..."
+    MacroEventManager.Broadcast("StatusTextUpdated", "Resetting...")
     Send "{Escape}"
     Sleep(500)
     Send "R"
@@ -93,7 +95,7 @@ TheSetup3() {
 }
 
 GoToShowdown2() {
-    TextStatus.Text := "Status: Going to showdown..."
+    MacroEventManager.Broadcast("StatusTextUpdated", "Going to showdown...")
     CustomClick(804, 34)
     Sleep(500)
     

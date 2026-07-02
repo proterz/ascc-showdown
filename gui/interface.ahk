@@ -1,4 +1,5 @@
 #Requires AutoHotkey v2.0
+global LevelToStop, IsFarming, MACRO_STATE
 
 ; === GUI STUFF ===
 myGui := Gui("-MaximizeBox", "ASCC auto showdown")
@@ -30,7 +31,46 @@ myGui.Add("Text", "x296 y8 w366 h40", "Press [Insert] key to stop the whole proc
 myGui.SetFont("s14")
 myGui.Add("Text", "x296 y56 w366 h55", "Press [End] key to forcefully close this application")
 
-StartButton.OnEvent("Click", StartClicked)
+StartButton.OnEvent("Click", StartButtonClicked)
 myGui.OnEvent('Close', (*) => ExitApp())
 
 myGui.Show("w675 h293")
+
+; === GUI FUNCTIONS ===
+StartButtonClicked(*) {
+    global LevelToStop, IsFarming, MACRO_STATE
+
+    inputValue := EditLevelToStopTextbox.Value
+    if (inputValue == "") {
+        MsgBox("Please enter a number into the Level to stop value")
+        return
+    }
+
+    LevelToStop := Integer(inputValue) + 1
+    IsFarming := true
+
+    if (!FocusRoblox()) {
+        MacroEventManager.Broadcast("FarmingStopped")
+        return
+    }
+
+    MACRO_STATE := "PREPARATION"
+    PerformMacroState()
+}
+
+ResetGUIVisuals(*) {
+    global IsFarming, MACRO_STATE
+    IsFarming := false
+    MACRO_STATE := "IDLE"
+
+    StartButton.Enabled := true
+    StartButton.Text := "&Start"
+    TextStatus.Text := "Status: Idle"
+    ToolTip()
+    Highlight()
+}
+
+; === EVENT MANAGER FUNCTIONS ===
+MacroEventManager.Listen("StatusTextUpdated", (newStatusText) => TextStatus.Text := "Status: " . newStatusText)
+MacroEventManager.Listen("LevelUpdated", (newLevelValue) => TextCurrentLevelLabel.Text := "Current Level: " . newLevelValue)
+MacroEventManager.Listen("FarmingStopped", ResetGUIVisuals)
