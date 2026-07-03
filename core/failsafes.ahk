@@ -1,47 +1,54 @@
 #Requires AutoHotkey v2.0
 
+; === UI CHECKS ===
 CheckShowdownUI() {
-    imageFileName := A_ScriptDir "\imagesearch pics\showdown.png"
-    colorVariation := "*20 "
-
-    ; Removed FocusRoblox() here so your computer doesn't stutter every 400ms.
-    WinGetClientPos(&_, &_, &shWidth, &shHeight, "ahk_exe RobloxPlayerBeta.exe")
-    
-    ; Changed &_ to explicit output variables to prevent memory overlap bugs
-    return ImageSearch(&outX, &outY, 0, 0, shWidth, shHeight, colorVariation . imageFileName)
+    return ImageSearchBase64(GetShowdownUIBase64())
 } ; checks if the showdown UI is on the screen by checking if the top left icon of the showdown is on the screen
 
 CheckIfIngame() {
-    imageFileName := A_ScriptDir "\imagesearch pics\plotButton.png"
-    colorVariation := "*20 "
-
     FocusRoblox()
-    WinGetClientPos(&_, &_, &ighWidth, &igHeight, "ahk_exe RobloxPlayerBeta.exe")
-    return ImageSearch(&_, &_, 0, 0, ighWidth, igHeight, colorVariation . imageFileName)
+    return ImageSearchBase64(GetIfIngameBase64())
 } ; checks if the player is ingame
 
 CheckLoadCardsUI() {
-    imageFileName := A_ScriptDir "\imagesearch pics\loadcard.png"
-    colorVariation := "*20 "
-
-    ; Removed FocusRoblox() here so your computer doesn't stutter every 400ms.
-    WinGetClientPos(&_, &_, &lcWidth, &lcHeight, "ahk_exe RobloxPlayerBeta.exe")
-    
-    ; Changed &_ to explicit output variables to prevent memory overlap bugs
-    return ImageSearch(&outX, &outY, 0, 0, lcWidth, lcHeight, colorVariation . imageFileName)
+    return ImageSearchBase64(GetLoadCardsUIBase64())
 } ; checks if in load card menu of showdown
 
 CheckIfDisconnected() {
-    imageFileName := A_ScriptDir "\imagesearch pics\disconnected.png"
-    colorVariation := "*20 "
-
-    ; Removed FocusRoblox() here so your computer doesn't stutter every 400ms.
-    WinGetClientPos(&_, &_, &cidWidth, &cidHeight, "ahk_exe RobloxPlayerBeta.exe")
-    
-    ; Changed &_ to explicit output variables to prevent memory overlap bugs
-    return ImageSearch(&outX, &outY, 0, 0, cidWidth, cidHeight, colorVariation . imageFileName)
+    return ImageSearchBase64(GetIfDisconnectedBase64())
 } ; checks for disconnected UI
 
+CheckClaimButton() {
+    return ImageSearchBase64(GetClaimButtonBase64())
+} ; checks for claim button UI
+
+ImageSearchBase64(base64string) {
+    targetWindow := "ahk_exe RobloxPlayerBeta.exe"
+    if !WinExist(targetWindow)
+        return false
+
+    hwnd := WinExist(targetWindow)
+    WinGetClientPos(&bmX, &bmY, &bmWidth, &bmHeight, hwnd)
+    
+    ; capture game frame straight to RAM
+    captureString := bmX "|" bmY "|" bmWidth "|" bmHeight
+    RobloxWindowBitmap := Gdip_BitmapFromScreen(captureString)
+    
+    ; decode asset string straight to RAM
+    TargetImageBitmap := Gdip_BitmapFromBase64(base64String)
+    
+    ; runs search matrix
+    outputList := ""
+    result := Gdip_ImageSearch(RobloxWindowBitmap, TargetImageBitmap, &outputList, 0, 0, 0, 0, 35)
+    
+    ; very important part that frees up ram that was used by this function
+    Gdip_DisposeImage(RobloxWindowBitmap)
+    Gdip_DisposeImage(TargetImageBitmap)
+    
+    return (result > 0)
+} ; uses GDI+ for imagesearch using base64 strings converted from pictures of game UI
+
+; === FAILSAFE ACTIONS ===
 CheckInternet() {
     http := ComObject("WinHttp.WinHttpRequest.5.1")
     try {
@@ -83,10 +90,6 @@ HandleDisconnect() {
     ; This stops the script from returning to the old broken function
     throw Error("GameReconnected") 
 } ; handles disconnection and navigates to showdown area, to be used almost everywhere in the code
-
-ClaimRewardsEarly() {
-
-}
 
 EndRunEarly() {
     global IsFarming

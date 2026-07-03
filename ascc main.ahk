@@ -1,12 +1,31 @@
 #Requires AutoHotkey v2.0
 #SingleInstance Force
+#include lib\OCR.ahk ; OCR library, shoutout Descolada on github
 
-global TargetMonitor := 1 ; Set to 1 for Primary Monitor, 2 for Secondary, etc...
+; === GDI+ STUFF ===
+#include lib\Gdip_All.ahk
+#include lib\Gdip_ImageSearch.ahk
+#include assets\imagesearch\base64images.ahk
+
+global pToken := Gdip_Startup()
+if (!pToken) {
+    MsgBox("GDI+ failed to start! The macro cannot run.")
+    ExitApp()
+}
+
+OnExit(ExitFunc)
+ExitFunc(*) {
+    global pToken
+    Gdip_Shutdown(pToken)
+    ExitApp()
+}
+
+; === GLOBAL VARIABLES ===
+global TargetMonitor := 2 ; Set to 1 for Primary Monitor, 2 for Secondary, etc...
 global LevelToStop := 5
 global CurrentLevel := 0
 global CurrentLevel2 := 0 ; for potions part (to be developed in the future)
 global IsFarming := false
-global goalReached := false
 
 global MACRO_STATE := "IDLE" ; IDLE, PREPARATION (setting window size, going to showdown area, etc), LOADING_CARDS, FARM_LOOP, CLAIMING, RECONNECTING
 
@@ -129,7 +148,6 @@ PerformMacroState() {
 }
 
 ; === INCLUDES ===
-#include lib\OCR.ahk ; OCR library, shoutout Descolada on github
 #include core\failsafes.ahk ; UI checks, disconnect procedures
 #include core\navigation.ahk ; clicks, movement, window sizing
 #include core\showdown.ahk ; loading cards, farm loops
@@ -148,11 +166,13 @@ Insert:: {
 End::ExitApp ; forcefully closes app
 Home::Pause(-1) ; actually pausing the whole process, as if time has stopped
 
-; ^t:: {
-;     if CheckLoadCardsUI() {
-;         MsgBox("Found!")
-;     } else {
-;         MsgBox("Not found")
-;     }
-; }
+^t:: {
+    if CheckShowdownUI() {
+        MsgBox("Found!")
+    } else {
+        MsgBox("Not found")
+    }
+}
 ; this is just for testing image search, dont mind it
+
+^e::MsgBox(CheckClaimButton())

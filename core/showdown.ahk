@@ -19,14 +19,6 @@ LoadCards() {
     Sleep(500)
 } ; loads the cards, use AutoHotkey Windows Spy if you want to modify, only use the client coordinates!!!!
 
-CheckClaimButton() {
-    imageFileName := A_ScriptDir "\imagesearch pics\claim.png"
-    colorVariation := "*20 "
-
-    WinGetClientPos(&_, &_, &cbWidth, &cbHeight, "ahk_exe RobloxPlayerBeta.exe")
-    return ImageSearch(&_, &_, 0, 0, cbWidth, cbHeight, colorVariation . imageFileName)
-}
-
 ClaimRewards() {
     global MACRO_STATE, IsFarming
     MacroEventManager.Broadcast("StatusTextUpdated", "Goal reached! Claiming...")
