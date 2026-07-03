@@ -1,6 +1,8 @@
 #Requires AutoHotkey v2.0
 #SingleInstance Force
 #include lib\OCR.ahk ; OCR library, shoutout Descolada on github
+#include core\config.ahk ; config handler to save macro settings
+CreateGUI()
 
 ; === GDI+ STUFF ===
 #include lib\Gdip_All.ahk
@@ -166,13 +168,11 @@ Insert:: {
 End::ExitApp ; forcefully closes app
 Home::Pause(-1) ; actually pausing the whole process, as if time has stopped
 
-^t:: {
-    if CheckShowdownUI() {
-        MsgBox("Found!")
-    } else {
-        MsgBox("Not found")
-    }
-}
+; ^t:: {
+;     if CheckShowdownUI() {
+;         MsgBox("Found!")
+;     } else {
+;         MsgBox("Not found")
+;     }
+; }
 ; this is just for testing image search, dont mind it
-
-^e::MsgBox(CheckClaimButton())
