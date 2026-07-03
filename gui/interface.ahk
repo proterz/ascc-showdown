@@ -7,31 +7,33 @@ CreateGUI() {
     savedConfig := LoadMacroConfig() ; for config
 
     myGui := Gui("-MaximizeBox", "ASCC Showdown Farm")
+    myGui.SetFont("s12", "Segoe UI") 
 
-    myGui.SetFont("s20")
-    global TextCurrentLevelLabel := myGui.Add("Text", "x16 y8 w261 h40", "Current Level: 0")
+    ; === LEFT COLUMN ===
+    ConfigBox := myGui.Add("GroupBox", "Section w280 h260 Center", "Main Farming Loop")
 
-    myGui.SetFont("s20")
-    myGui.Add("Text", "x16 y48 w168 h39", "Level to stop:")
+    global TextCurrentLevelLabel := myGui.Add("Text", "xp+15 yp+30 w250", "Current Level: 0")
 
-    myGui.SetFont("s20")
-    global EditLevelToStopTextbox := myGui.Add("Edit", "x184 y48 w93 h39 +Number", savedConfig["LevelToStop"])
+    myGui.Add("Text", "xs+15 y+20 w100", "Level Mode:")
+    global DropLevelMode := myGui.Add("DropDownList", "x+m yp-4 w130 Choose" . (savedConfig["StopMode"] = "Manual" ? 2 : 1), ["Automatic", "Manual"])
+    DropLevelMode.OnEvent("Change", ToggleLevelMode)
 
-    myGui.SetFont("s14")
-    global StartButton := myGui.Add("Button", "x16 y88 w261 h40 Default", "&Start")
+    global EditLevelToStopTextbox := myGui.Add("Edit", "xs+15 y+10 w250 +Number", savedConfig["LevelToStop"])
+    ToggleLevelMode(DropLevelMode)
+    global CheckboxRepeat := myGui.Add("CheckBox", "xs+15 y+15 w250 Checked" . savedConfig["CheckboxRepeat"], "Repeat Showdown")
+    global StartButton := myGui.Add("Button", "xs+15 y+25 w250 h40 Default", "&Start")
 
-    myGui.SetFont("s20")
-    global CheckboxRepeat := myGui.Add("CheckBox", "x16 y128 w262 h40 Checked" . savedConfig["CheckboxRepeat"], "Repeat Showdown")
+    ; === RIGHT COLUMN ===
+    myGui.Add("GroupBox", "ys w350 h260 Center", "Hotkeys")
+    
+    myGui.Add("Text", "xp+15 yp+30 w320", "Press [Insert] to pause the macro.")
+    myGui.Add("Text", "xp y+20 w320", "Press [End] to completely exit.")
+    myGui.Add("Text", "xp y+20 w320 cBlue", "Press [F12] to toggle the Debug Console.") 
 
-    myGui.SetFont("s20")
-    global TextStatus := myGui.Add("Text", "x16 y232 w645 h47", "Status: Idle")
+    ; === BOTTOM ===
+    global TextStatus := myGui.Add("Text", "xm y+150 w645 r2", "Status: Idle")
 
-    myGui.SetFont("s14")
-    myGui.Add("Text", "x296 y8 w366 h40", "Press [Insert] key to stop the whole process")
-
-    myGui.SetFont("s14")
-    myGui.Add("Text", "x296 y56 w366 h55", "Press [End] key to forcefully close this application")
-
+    ; === GUI EVENTS ===
     StartButton.OnEvent("Click", StartButtonClicked)
     myGui.OnEvent("Close", OnHeartbeatGuiClose)
 
@@ -44,7 +46,7 @@ CreateGUI() {
 
     RegisterGUIEventListeners()
 
-    myGui.Show("w675 h293")
+    myGui.Show()
 
     ; === AUTO RESUME IF EVER MACRO CRASHES ===
     if (IsRecoveryMode && savedConfig["CheckboxRepeat"] == "1") {
@@ -55,17 +57,35 @@ CreateGUI() {
 }
 
 ; === GUI FUNCTIONS ===
-StartButtonClicked(*) {
-    global LevelToStop, IsFarming, MACRO_STATE
+ToggleLevelMode(ctrl, *) {
+    global EditLevelToStopTextbox
+    isManual := (ctrl.Text == "Manual")
+    EditLevelToStopTextbox.Visible := isManual
+    EditLevelToStopTextbox.Enabled := isManual
+}
 
-    inputValue := EditLevelToStopTextbox.Value
-    if (inputValue == "") {
-        MsgBox("Please enter a number into the Level to stop value")
-        return
+StartButtonClicked(*) {
+    global LevelToStop, IsFarming, MACRO_STATE, EditLevelToStopTextbox, CheckboxRepeat, DropLevelMode, IsAutoStop
+
+    selectedStopMode := DropLevelMode.Text
+    manualLevelValue := EditLevelToStopTextbox.Value
+
+    if (selectedStopMode == "Manual") {
+        IsAutoStop := false
+        
+        if (manualLevelValue == "" || Integer(manualLevelValue) <= 0) {
+            MsgBox("Please enter a valid target level above 0!", "Error", "Icon!")
+            return
+        }
+        LevelToStop := Integer(manualLevelValue) + 1
+    } else {
+        ; Automatic Mode
+        IsAutoStop := true
+        LevelToStop := 9999 ; Set arbitrarily high so the manual check never triggers
     }
 
-    LevelToStop := Integer(inputValue) + 1
-    SaveMacroConfig(inputValue, CheckboxRepeat.Value)
+    savedRepeat := CheckboxRepeat.Value
+    SaveMacroConfig(manualLevelValue, savedRepeat, selectedStopMode)
     IsFarming := true
 
     StartButton.Enabled := false

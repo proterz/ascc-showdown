@@ -57,6 +57,26 @@ ClaimRewards() {
     }
 }
 
+CheckAutoStopPixel() {
+    checkX := 280
+    checkY := 399
+    targetColor := "0xFF3C3C"
+    targetWindow := "ahk_exe RobloxPlayerBeta.exe"
+
+    if WinExist(targetWindow) {
+        try {
+            currentColor := PixelGetColor(checkX, checkY)
+            return (StrUpper(currentColor) == StrUpper(targetColor))
+        } catch Error as e {
+            ; Optional: log the error for debugging
+            MsgBox "PixelGetColor failed: " e.Message
+            return false
+        }
+    }
+    return false
+}
+
+
 ; === FARMING LOOPS ===
 RunFarmLoop() {
     global CurrentLevel, LevelToStop, IsFarming, MACRO_STATE
@@ -140,12 +160,29 @@ RunFarmLoop() {
             ; }
 
             ; the actual part that clicks next level button
-            if (CurrentLevel < LevelToStop) {
-                CustomClick(783, 496)
-                Sleep(300)
+            ; if (CurrentLevel < LevelToStop) {
+            ;     CustomClick(783, 496)
+            ;     Sleep(300)
+            ; } else {
+            ;     MACRO_STATE := "CLAIMING"
+            ;     break
+            ; }
+            if (IsAutoStop) {
+                if (CheckAutoStopPixel()) {
+                    MACRO_STATE := "CLAIMING"
+                    break
+                } else {
+                    CustomClick(783, 496)
+                    Sleep(300)
+                }
             } else {
-                MACRO_STATE := "CLAIMING"
-                break
+                if (CurrentLevel < LevelToStop) {
+                    CustomClick(783, 496)
+                    Sleep(300)
+                } else {
+                    MACRO_STATE := "CLAIMING"
+                    break
+                }
             }
         } catch {
             Sleep(500)

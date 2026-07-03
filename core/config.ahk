@@ -9,14 +9,16 @@ LoadMacroConfig() {
     settings := Map()
     settings["LevelToStop"] := IniRead(IniFilePath, "Settings", "LevelToStop", "5")
     settings["CheckboxRepeat"] := IniRead(IniFilePath, "Settings", "CheckboxRepeat", "1")
+    settings["StopMode"] := IniRead(IniFilePath, "Settings", "StopMode", "Automatic")
     
     return settings
 }
 
 ; config saver to file
-SaveMacroConfig(level, repeatValue) {
+SaveMacroConfig(level, repeatValue, stopMode := "Automatic") {
     global IniFilePath
     
     IniWrite(level, IniFilePath, "Settings", "LevelToStop")
     IniWrite(repeatValue, IniFilePath, "Settings", "CheckboxRepeat")
+    IniWrite(stopMode, IniFilePath, "Settings", "StopMode")
 }
