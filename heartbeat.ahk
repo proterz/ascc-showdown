@@ -8,9 +8,7 @@ global LastPulseTime  := A_TickCount
 global RecoveryCount  := 0
 global IsDebugVisible := false
 
-; ==========================================================
-; DEBUG GUI INITIALIZATION
-; ==========================================================
+; === TELEMETRY/DEBUG GUI ===
 HeartbeatGui := Gui("+AlwaysOnTop -MaximizeBox -MinimizeBox", "System Debugger")
 HeartbeatGui.SetFont("s9", "Segoe UI")
 
@@ -29,11 +27,7 @@ MonitorGetWorkArea(1, &WorkLeft, &WorkTop, &WorkRight, &WorkBottom)
 global GuiX := WorkRight - 320
 global GuiY := WorkTop + 20
 
-; Do NOT call .Show() here so it starts hidden!
-
-; ==========================================================
-; HOTKEY & TIMERS
-; ==========================================================
+; === TELEMETRY GUI AND TIMERS ===
 F12:: {
     global IsDebugVisible, HeartbeatGui, GuiX, GuiY
     IsDebugVisible := !IsDebugVisible
@@ -48,9 +42,7 @@ OnMessage(0x004A, InterceptMainPulse)
 SetTimer(UpdateGuiTimer, 100)
 SetTimer(MonitorMainProcessHealth, 5000)
 
-; ==========================================================
-; CORE FUNCTIONS
-; ==========================================================
+; === CORE FUNCTIONS ===
 InterceptMainPulse(wParam, lParam, msg, hwnd) {
     global LastPulseTime, TxtState, TxtFunction, TxtStatus
     LastPulseTime := A_TickCount
