@@ -6,7 +6,7 @@ CreateGUI() {
     global LevelToStop, IsFarming, MACRO_STATE
     savedConfig := LoadMacroConfig() ; for config
 
-    myGui := Gui("-MaximizeBox", "ASCC auto showdown")
+    myGui := Gui("-MaximizeBox", "ASCC Showdown Farm")
 
     myGui.SetFont("s20")
     global TextCurrentLevelLabel := myGui.Add("Text", "x16 y8 w261 h40", "Current Level: 0")
@@ -33,9 +33,25 @@ CreateGUI() {
     myGui.Add("Text", "x296 y56 w366 h55", "Press [End] key to forcefully close this application")
 
     StartButton.OnEvent("Click", StartButtonClicked)
-    myGui.OnEvent('Close', (*) => ExitApp())
+    myGui.OnEvent("Close", OnHeartbeatGuiClose)
+
+    OnHeartbeatGuiClose(*) {
+        global IsManualShutdown
+        IsManualShutdown := true
+        ExitApp()
+    }
+
+
+    RegisterGUIEventListeners()
 
     myGui.Show("w675 h293")
+
+    ; === AUTO RESUME IF EVER MACRO CRASHES ===
+    if (IsRecoveryMode && savedConfig["CheckboxRepeat"] == "1") {
+        MacroEventManager.Broadcast("StatusTextUpdated", "Automated recovery triggered! Starting...")
+        
+        SetTimer((*) => StartButtonClicked(), -2000) ; give a 2 second window when recovering from the macro crashing
+    }
 }
 
 ; === GUI FUNCTIONS ===
@@ -55,10 +71,11 @@ StartButtonClicked(*) {
     StartButton.Enabled := false
     StartButton.Text := "Running"
 
-    if (!FocusRoblox()) {
-        MacroEventManager.Broadcast("FarmingStopped")
-        return
-    }
+    ; if (!FocusRoblox()) {
+    ;     MacroEventManager.Broadcast("FarmingStopped")
+    ;     return
+    ; }
+    ; disabling this for now as PREPARATION state will launch Roblox by itself
 
     MACRO_STATE := "PREPARATION"
     PerformMacroState()
@@ -77,6 +94,8 @@ ResetGUIVisuals(*) {
 }
 
 ; === EVENT MANAGER FUNCTIONS ===
+RegisterGUIEventListeners() {
 MacroEventManager.Listen("StatusTextUpdated", (newStatusText) => TextStatus.Text := "Status: " . newStatusText)
 MacroEventManager.Listen("LevelUpdated", (newLevelValue) => TextCurrentLevelLabel.Text := "Current Level: " . newLevelValue)
 MacroEventManager.Listen("FarmingStopped", ResetGUIVisuals)
+}

@@ -140,3 +140,25 @@ EndRunEarly() {
         }
     }
 } ; if starting the macro or when going back to showdown area and showdown is in the middle of the run, end the run to be able to start again
+
+LaunchASCCviaDeeplink() {
+    MacroEventManager.Broadcast("StatusTextUpdated", "Closing old game process...")
+    if ProcessExist("RobloxPlayerBeta.exe") {
+        ProcessClose("RobloxPlayerBeta.exe")
+        Sleep(2000)
+    }
+    
+    MacroEventManager.Broadcast("StatusTextUpdated", "Launching via Deeplink...")
+    Run("roblox://placeId=109715918987082")
+    
+    ; Wait up to 60 seconds for the engine process window to instantiate
+    if WinWait("ahk_exe RobloxPlayerBeta.exe",, 60) {
+        MacroEventManager.Broadcast("StatusTextUpdated", "Roblox engine detected! Waiting for game load...")
+        Sleep(13000) ; give the game 13 seconds to load
+        WinActivate("ahk_exe RobloxPlayerBeta.exe")
+        return true
+    } else {
+        MacroEventManager.Broadcast("StatusTextUpdated", "Launch initialization timed out!")
+        return false
+    }
+}
