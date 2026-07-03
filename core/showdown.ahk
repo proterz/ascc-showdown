@@ -37,7 +37,7 @@ ClaimRewards() {
                 ToolTip()
 
                 MacroEventManager.Broadcast("StatusTextUpdated", "Waiting for UI to clear...")
-                Sleep(1000)
+                Sleep(700)
 
                 if (CheckboxRepeat.Value == 0) {
                     IsFarming := false
@@ -134,14 +134,15 @@ RunFarmLoop() {
             CurrentLevel := Integer(cleaned_text)
             MacroEventManager.Broadcast("LevelUpdated", CurrentLevel)
 
-            if (CurrentLevel > LevelToStop + 2) {
-                ToolTip("Ignored false reading: " CurrentLevel, scanX, scanY+67)
-                continue
-            }
+            ; if (CurrentLevel > LevelToStop + 2) {
+            ;     ToolTip("Ignored false reading: " CurrentLevel, scanX, scanY+67)
+            ;     continue
+            ; }
 
             ; the actual part that clicks next level button
             if (CurrentLevel < LevelToStop) {
-                CustomClick(783, 496) 
+                CustomClick(783, 496)
+                Sleep(300)
             } else {
                 MACRO_STATE := "CLAIMING"
                 break

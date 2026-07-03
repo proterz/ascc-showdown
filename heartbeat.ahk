@@ -89,11 +89,6 @@ MonitorMainProcessHealth() {
     global LastPulseTime, MaxStaleTime, MainScriptName, TxtStatus, TxtFunction, RecoveryCount, TxtRecover
     
     timeSinceLastPulse := A_TickCount - LastPulseTime
-    if ProcessExist("AutoHotkey64.exe") {
-            ; This drops the whole thread pool instantly
-            ProcessClose("AutoHotkey64.exe") 
-            Sleep(1000)
-    }
     if (timeSinceLastPulse > MaxStaleTime) {
         SetTimer(UpdateGuiTimer, 0)
         
@@ -107,8 +102,14 @@ MonitorMainProcessHealth() {
         DetectHiddenWindows(true)
         targetScriptHwnd := MainScriptName . " ahk_class AutoHotkey"
         if WinExist(targetScriptHwnd) {
-            WinClose(targetScriptHwnd)
-            Sleep(1000)
+            ; Extract the unique Process ID (PID) for the main script
+            targetPID := WinGetPID(targetScriptHwnd)
+            
+            ; Force kill only that specific PID, leaving the heartbeat untouched
+            if (targetPID) {
+                ProcessClose(targetPID)
+                Sleep(1000)
+            }
         }
         
         if ProcessExist("RobloxPlayerBeta.exe") {

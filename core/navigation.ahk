@@ -3,13 +3,10 @@ global TargetMonitor, MACRO_STATE
 
 FocusRoblox() {
     targetWindow := "ahk_exe RobloxPlayerBeta.exe"
-    if !WinExist(targetWindow) {
-        MsgBox("Roblox is not running!!!")
-        return false
+    if WinExist(targetWindow) {
+        WinActivate(targetWindow)
+        Sleep(200)
     }
-    WinActivate(targetWindow)
-    WinWaitActive(targetWindow, , 3)
-    return true
 } ; forcefully focuses on roblox
 
 CustomClick(x, y) {

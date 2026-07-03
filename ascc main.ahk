@@ -61,16 +61,16 @@ if (!pToken) {
 }
 
 OnExit(ExitFunc)
+OnExit(ExitFunc)
 ExitFunc(*) {
-    global pToken, IsManualShutdown
+    global pToken
 
     DetectHiddenWindows(true)
-    if IsManualShutdown {
-        targetGuardHwnd := "heartbeat.ahk ahk_class AutoHotkey"
-        if WinExist(targetGuardHwnd) {
-            WinClose(targetGuardHwnd)
-        } ; close heartbeat only when user intentionally exits the macro
-    }
+    
+    targetGuardHwnd := "heartbeat.ahk ahk_class AutoHotkey"
+    if WinExist(targetGuardHwnd) {
+        WinClose(targetGuardHwnd)
+    } 
 
     Gdip_Shutdown(pToken)
     ExitApp()
@@ -162,10 +162,31 @@ PerformMacroState() {
         try {
             switch MACRO_STATE {
                 case "PREPARATION":
-                    if !ProcessExist("RobloxPlayerBeta.exe") {
-                        LaunchASCCviaDeeplink()
-                    } ; if game down, open ASCC via Deeplink (roblox://placeId=109715918987082)
+                    ; if !ProcessExist("RobloxPlayerBeta.exe") {
+                    ;     LaunchASCCviaDeeplink()
+                    ; } ; if game down, open ASCC via Deeplink (roblox://placeId=109715918987082)
 
+                    if !WinExist("ahk_exe RobloxPlayerBeta.exe") {
+                        DebugLog("No game window found. Triggering Deeplink...")
+                        
+                        ; If the launcher fails or times out, restart the loop from the top
+                        if !LaunchASCCviaDeeplink() {
+                            Sleep(2000)
+                            continue 
+                        }
+                    }
+
+                    if WinWait("ahk_exe RobloxPlayerBeta.exe",, 15) {
+                        DebugLog("Focusing and Resizing...")
+                        FocusRoblox()
+                        SetWindowSize()
+                        Sleep(500)
+                    } else {
+                        DebugLog("Window failed to appear after launch.")
+                        continue ; Restart the loop
+                    }
+
+                    FocusRoblox()
                     SetWindowSize()
                     Sleep(500)
 
