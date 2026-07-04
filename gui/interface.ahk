@@ -26,9 +26,9 @@ CreateGUI() {
     ; === RIGHT COLUMN ===
     myGui.Add("GroupBox", "ys w350 h260 Center", "Hotkeys")
     
-    myGui.Add("Text", "xp+15 yp+30 w320", "Press [Insert] to pause the macro.")
+    myGui.Add("Text", "xp+15 yp+30 w320", "Press [Insert] to shop the macro.")
     myGui.Add("Text", "xp y+20 w320", "Press [End] to completely exit.")
-    myGui.Add("Text", "xp y+20 w320 cBlue", "Press [F12] to toggle the Debug Console.") 
+    myGui.Add("Text", "xp y+20 w320 cBlue", "Press [F12] to toggle the macro state window.") 
 
     ; === BOTTOM ===
     global TextStatus := myGui.Add("Text", "xm y+150 w645 r2", "Status: Idle")
