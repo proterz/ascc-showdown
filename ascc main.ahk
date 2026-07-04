@@ -260,5 +260,3 @@ Home::Pause(-1) ; actually pausing the whole process, as if time has stopped
         Sleep(1000) ; This loop will block the script from doing anything else permenantly
     }
 }
-
-^e::GoToShowdown2()

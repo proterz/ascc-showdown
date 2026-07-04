@@ -79,32 +79,39 @@ SetWindowSize() {
 TheSetup3() {
     TextStatus.Text := "Status: Resetting..."
     MacroEventManager.Broadcast("StatusTextUpdated", "Resetting...")
-    Send "{Escape}"
-    Sleep(500)
-    Send "R"
-    Sleep(500)
-    Send "{Enter}"
-    StatusSleep(5500, "Status: Waiting for respawn to finish...")
+    showdownNavigateFailCount := 0
+    while (showdownNavigateFailCount <= 3) {
+        Send "{Escape}"
+        Sleep(500)
+        Send "R"
+        Sleep(500)
+        Send "{Enter}"
+        StatusSleep(5500, "Status: Waiting for respawn to finish...")
 
-    CustomClick(754, 475)
-    Sleep(500)
-    GoToShowdown2()
+        CustomClick(754, 475)
+        Sleep(500)
+        GoToShowdown2()
+
+        if (!CheckLoadCardsUI() && !CheckShowdownUI()) {
+            showdownNavigateFailCount++
+        } else {
+            return
+        }
+    }
+
+    MacroEventManager.Broadcast("FarmingStopped")
+    MsgBox("Very sorry :( Could not navigate to showdown area. Please manually navigate to showdown area and start the macro again!")
 }
 
 GoToShowdown2() {
     MacroEventManager.Broadcast("StatusTextUpdated", "Going to showdown...")
-    if (!CheckLoadCardsUI() && !CheckShowdownUI()) {
-        CustomClick(804, 34)
-        Sleep(500)
-        Send "{s down}"
-        Sleep(11300)
-        Send "{s up}"
-        Send "{a down}"
-        Sleep(2300)
-        Send "{a up}"
-        Sleep(800)
-    } else {
-        MacroEventManager.Broadcast("FarmingStopped")
-        MsgBox("Very sorry :( Could not navigate to showdown area. Please manually navigate to showdown area and start the macro again!")
-    }
+    CustomClick(804, 34)
+    Sleep(500)
+    Send "{s down}"
+    Sleep(11300)
+    Send "{s up}"
+    Send "{a down}"
+    Sleep(2300)
+    Send "{a up}"
+    Sleep(500)
 }
