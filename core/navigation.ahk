@@ -93,16 +93,18 @@ TheSetup3() {
 
 GoToShowdown2() {
     MacroEventManager.Broadcast("StatusTextUpdated", "Going to showdown...")
-    CustomClick(804, 34)
-    Sleep(500)
-    
-    Send "{s down}"
-    while (!CheckLoadCardsUI() && !CheckShowdownUI()) {
-        if (CheckIfDisconnected()) {
-            Send "{s up}" ; Release the key first!
-            HandleDisconnect()
-        }
-        Sleep(50)
+    if (!CheckLoadCardsUI() && !CheckShowdownUI()) {
+        CustomClick(804, 34)
+        Sleep(500)
+        Send "{s down}"
+        Sleep(11300)
+        Send "{s up}"
+        Send "{a down}"
+        Sleep(2300)
+        Send "{a up}"
+        Sleep(800)
+    } else {
+        MacroEventManager.Broadcast("FarmingStopped")
+        MsgBox("Very sorry :( Could not navigate to showdown area. Please manually navigate to showdown area and start the macro again!")
     }
-    Send "{s up}"
 }
