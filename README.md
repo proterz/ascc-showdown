@@ -11,10 +11,8 @@ Tick the "Repeat Showdown" checkbox to constantly repeat the load card -> farm -
 Hotkeys:
 - Insert = stop farming
 - End = force close the macro
-- Home = pause the whole macro
 
 Requirements:
 - AHK v2 installed
-- Movement Mode in Roblox Settings set to "Click To Move"
 - Turned off Use Upgraded Walkspeed in ingame settings
 - Atleast more than 720p monitor resolution
