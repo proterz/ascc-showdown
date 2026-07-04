@@ -26,7 +26,7 @@ CreateGUI() {
     ; === RIGHT COLUMN ===
     myGui.Add("GroupBox", "ys w350 h260 Center", "Hotkeys")
     
-    myGui.Add("Text", "xp+15 yp+30 w320", "Press [Insert] to shop the macro.")
+    myGui.Add("Text", "xp+15 yp+30 w320", "Press [Insert] to stop the macro.")
     myGui.Add("Text", "xp y+20 w320", "Press [End] to completely exit.")
     myGui.Add("Text", "xp y+20 w320 cBlue", "Press [F12] to toggle the macro state window.") 
 
