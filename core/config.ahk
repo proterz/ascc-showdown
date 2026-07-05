@@ -31,6 +31,14 @@ CustomizeCardLoading(*) {
 
     MsgBox("Load Card Calibration has started! Press Escape if you want to abort.")
 
+    targetWindow := "ahk_exe RobloxPlayerBeta.exe" 
+    if !WinExist(targetWindow) {
+        MsgBox("Roblox not found. Please launch the game first!")
+        return
+    }
+    WinActivate(targetWindow)
+    WinWaitActive(targetWindow)
+    Sleep(200)
     if (!CheckLoadCardsUI()) {
         MsgBox("Please go to the Showdown Area and open the Load Cards UI first.")
         return
