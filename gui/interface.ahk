@@ -30,11 +30,29 @@ CreateGUI() {
     myGui.Add("Text", "xp y+20 w320", "Press [End] to completely exit.")
     myGui.Add("Text", "xp y+20 w320 cBlue", "Press [F12] to toggle the macro state window.") 
 
-    btnCustomize := MyGui.Add("Button", "w200", "Customize Card Loading")
+    ; monitor selection
+    global TargetMonitor := IniRead("config.ini", "Settings", "TargetMonitor", 1) 
+    primaryMonitor := MonitorGetPrimary()
+    monitorList := []
+    wmiNames := GetDeviceManagerMonitorNames()
+    Loop MonitorGetCount() {
+        monitorName := wmiNames.Has(A_Index) ? wmiNames[A_Index] : StrReplace(MonitorGetName(A_Index), "\\.\", "")
+        displayName := monitorName
+        if (A_Index == primaryMonitor) {
+            displayName .= " (Primary)"
+        }
+        monitorList.Push(displayName)
+    }
+
+    MyGui.Add("Text", "xm", "Target Monitor:")
+    ddlMonitor := MyGui.Add("DropDownList", "x+m w350 Choose" TargetMonitor, monitorList)
+    ddlMonitor.OnEvent("Change", UpdateTargetMonitor)
+
+    btnCustomize := MyGui.Add("Button", "xm w200", "Customize Card Loading")
     btnCustomize.OnEvent("Click", CustomizeCardLoading)
 
     ; === BOTTOM ===
-    global TextStatus := myGui.Add("Text", "xm y+150 w645 r2", "Status: Idle")
+    global TextStatus := myGui.Add("Text", "xm y+70 w645 r2", "Status: Idle")
 
     ; === GUI EVENTS ===
     StartButton.OnEvent("Click", StartButtonClicked)
@@ -60,6 +78,31 @@ CreateGUI() {
 }
 
 ; === GUI FUNCTIONS ===
+GetDeviceManagerMonitorNames() {
+    names := []
+    try {
+        wmi := ComObjGet("winmgmts:{impersonationLevel=impersonate}!\\.\root\cimv2")
+        query := wmi.ExecQuery("SELECT Name FROM Win32_PnPEntity WHERE PNPClass = 'Monitor'")
+        
+        for device in query {
+            if (device.Name != "")
+                names.Push(device.Name)
+        }
+    } catch as err {
+    }
+    return names
+}
+
+UpdateTargetMonitor(ctrl, *) {
+    global TargetMonitor
+    
+    ; ctrl.Value returns the index number (1, 2, 3...) of the selected item
+    TargetMonitor := ctrl.Value
+    
+    ; Save to config so it persists
+    IniWrite(TargetMonitor, "config.ini", "Settings", "TargetMonitor")
+}
+
 ToggleLevelMode(ctrl, *) {
     global EditLevelToStopTextbox
     isManual := (ctrl.Text == "Manual")
