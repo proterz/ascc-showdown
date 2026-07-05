@@ -2,22 +2,36 @@
 global CurrentLevel, LevelToStop, MACRO_STATE, IsFarming
 
 LoadCards() {
+    ; load settings from config.ini
+    strongX := IniRead("config.ini", "LoadCards", "StrongX", 0)
+    strongY := IniRead("config.ini", "LoadCards", "StrongY", 0)
+    scrollAmount := IniRead("config.ini", "LoadCards", "ScrollAmount", 0)
+    weak1X := IniRead("config.ini", "LoadCards", "Weak1X", 0)
+    weak1Y := IniRead("config.ini", "LoadCards", "Weak1Y", 0)
+    weak2X := IniRead("config.ini", "LoadCards", "Weak2X", 0)
+    weak2Y := IniRead("config.ini", "LoadCards", "Weak2Y", 0)
+
     if (CheckIfDisconnected()) {
         HandleDisconnect()
     }
-    CustomClick(314, 304) ; strong card
-    Sleep(500)
 
-    Loop 6 { ; modify the number after "loop" to decide how many times to scroll down
+    if (strongX == 0 || weak1X == 0) {
+        MacroEventManager.Broadcast("FarmingStopped")
+        MsgBox("Load Card Settings uncalibrated! Please calibrate them.")
+        return
+    }
+
+    CustomClick(strongX, strongY)
+    Sleep(500)
+    loop scrollAmount {
         Send "{WheelDown}"
         Sleep(200)
     }
-
-    CustomClick(541, 487) ; weak card 1
+    CustomClick(weak1X, weak1Y)
     Sleep(500)
-    CustomClick(660, 487) ; weak card 2
+    CustomClick(weak2X, weak2Y)
     Sleep(500)
-} ; loads the cards, use AutoHotkey Windows Spy if you want to modify, only use the client coordinates!!!!
+} ; loads the cards
 
 ClaimRewards() {
     global MACRO_STATE, IsFarming

@@ -30,6 +30,9 @@ CreateGUI() {
     myGui.Add("Text", "xp y+20 w320", "Press [End] to completely exit.")
     myGui.Add("Text", "xp y+20 w320 cBlue", "Press [F12] to toggle the macro state window.") 
 
+    btnCustomize := MyGui.Add("Button", "w200", "Customize Card Loading")
+    btnCustomize.OnEvent("Click", CustomizeCardLoading)
+
     ; === BOTTOM ===
     global TextStatus := myGui.Add("Text", "xm y+150 w645 r2", "Status: Idle")
 
